@@ -18,19 +18,19 @@ def getPlot(log1, log2, log3, titel):
     max = [statistics.mean(k) for k in zip(max1, max2, max3)]
 
     Exp_data['Generation'] = gen
-    Exp_data['Best Fitness'] = min
-    Exp_data['Worst Fitness'] = max
+    Exp_data['Best Fitness'] = max
+    Exp_data['Worst Fitness'] = min
     Exp_data['Average Fitness'] = Avg
     Exp_data['Median Fitness'] = median
 
     Exp_data.to_csv('C:/EvolutionaryAlgorithm/Assigments1/Results/'+ titel +'.csv')
 
     fig, ax1 = plt.subplots()
-    line1 = ax1.plot(gen, min, "b-", label="Best Fitness")
+    line1 = ax1.plot(gen, max, "b-", label="Best Fitness")
     ax1.set(xlabel='Generation', ylabel='Fitness',
            title=titel + ' Avg Results')
     ax1.grid()
-    line2 = ax1.plot(gen, max, "r-", label="Worst Fitness")
+    line2 = ax1.plot(gen, min, "r-", label="Worst Fitness")
     line3 = ax1.plot(gen, Avg, "g-", label="Average Fitness")
     line4 = ax1.plot(gen, median, "y-", label="Median Fitness")
     lns = line1 + line2 + line3 + line4

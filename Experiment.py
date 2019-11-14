@@ -21,15 +21,7 @@ class Experiment:
         self.cxpb =_cxpb
         self.mutpb = _mutpb
 
-    def evalNQueens(self,individual):
-        """Evaluation function for the n-queens problem.
-        The problem is to determine a configuration of n queens
-        on a nxn chessboard such that no queen can be taken by
-        one another. In this version, each queens is assigned
-        to one column, and only one queen can be on each line.
-        The evaluation function therefore only counts the number
-        of conflicts along the diagonals.
-        """
+    def evaluateFunc(self,individual):
         size = len(individual)
         # Count the number of conflicts with other queens.
         # The conflicts can only be diagonal, count on each diagonal line
@@ -60,10 +52,11 @@ class Experiment:
         if len(d) > 1:
             x=1
 
-        return sum_,
+        score = 1/(sum_+1)
+        return score,
 
 
-    def onePointMutate(self,individual):
+    def createMutate(self,individual):
         if self.is_premutation:
             indx1,indx2 = random.sample(range(0, self.NB_QUEENS - 1), 2)
             num1 = individual[indx1]
@@ -78,15 +71,15 @@ class Experiment:
 
     def setExperiment(self):
         if self.is_premutation:
-            creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-            creator.create("Individual", list, fitness=creator.FitnessMin)
+            creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+            creator.create("Individual", list, fitness=creator.FitnessMax)
             toolbox = base.Toolbox()
             toolbox.register("permutation", random.sample, range(self.NB_QUEENS), self.NB_QUEENS)
             toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.permutation)
 
         if not self.is_premutation:
-            creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-            creator.create("Individual", array.array, typecode="b", fitness=creator.FitnessMin, strategy=None)
+            creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+            creator.create("Individual", array.array, typecode="b", fitness=creator.FitnessMax, strategy=None)
             toolbox = base.Toolbox()
             toolbox.register("array", random.sample, range(self.NB_QUEENS), self.NB_QUEENS)
             toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.array)
@@ -96,14 +89,14 @@ class Experiment:
             # Only the line is stored, the column is the index of the number in the list.
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-        toolbox.register("evaluate", self.evalNQueens)
+        toolbox.register("evaluate", self.evaluateFunc)
         # crossover method - single point
         if self.is_premutation:
             toolbox.register("mate", tools.cxPartialyMatched)
         if not self.is_premutation:
             toolbox.register("mate", tools.cxOnePoint)
         # mutate method - one point (we create it)
-        toolbox.register("mutate", self.onePointMutate)
+        toolbox.register("mutate", self.createMutate)
         # toolbox.register("mutate", tools.mutShuffleIndexes, indpb = 2.0/NB_QUEENS)
         toolbox.register("select", tools.selRoulette)
         # toolbox.register("select", tools.selTournament, tournsize=3)
